@@ -1,0 +1,8 @@
+# compiled output
+/dist
+/out
+/public/bundle.js
+
+# dependencies
+/node_modules
+
