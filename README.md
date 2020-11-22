@@ -110,3 +110,41 @@ Using pm2 (Process Manager 2)
 `sudo pm2 env 0`  
 - Start a handy monitoring dashboard for pm2  
 `sudo pm2 monit`  
+
+
+## AD Hoc network setup
+
+
+Used the following instruction from this [StackExchange](https://raspberrypi.stackexchange.com/questions/94047/how-to-setup-an-unprotected-ad-hoc-ibss-network-and-if-possible-with-wpa-encry)
+
+```
+rpi ~$ sudo -Es   # if not already done
+rpi ~# cat > /etc/wpa_supplicant/wpa_supplicant-wlan0.conf <<EOF
+ctrl_interface=DIR=/run/wpa_supplicant GROUP=netdev
+update_config=1
+p2p_disabled=1
+country=US
+
+network={
+    ssid="PiNet"
+    frequency=2412   # channel 1
+    mode=1           # IBSS (ad-hoc, peer-to-peer)
+    key_mgmt=NONE
+}
+EOF
+
+rpi ~# chmod 600 /etc/wpa_supplicant/wpa_supplicant-wlan0.conf
+rpi ~# systemctl enable wpa_supplicant@wlan0.service
+
+reboot
+
+Check with:
+
+rpi ~$ iw dev
+rpi ~$ iw dev wlan0 link
+rpi ~$ ip addr
+rpi ~$ sudo iw dev wlan0 scan | grep -B8 -A3 "IBSS-RPiNet"
+
+# From another ad hoc connected device you should be able to
+rpi ~$ ping -c3 raspberrypi.local
+```
